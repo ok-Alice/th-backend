@@ -229,12 +229,13 @@ eproject_address = project.read(kp['alice'], 'project_collection', args = {'proj
 if verbose > 0:
     print("eproject address:", eproject_address)
 
+print("eproject address:", eproject_address)
+
 employee_project = contract_from_address(str(eproject_address), 'assignment/assignment')
 total_supply = employee_project.read(kp['alice'], 'Minting::max_supply').contract_result_data[1]
 assert(total_supply == 100)
 
 transfer_balance(kp['alice'], str(eproject_address), 10**17)
-
 
 ## Setting up employees
 
@@ -252,8 +253,8 @@ for member in members:
     contract_call("Employee_function voting_power " + member, kp['alice'], employee_function, "set_token_voting_power",   args = { 'token_id': { 'U64' : ids[member]['employee_function']}, 'voting_factor': titles[member]['function_voting_power'] }) 
     
     ids[member]['employee_project'] = contract_mint_to('Mint Employee-Project for ' + member, kp['alice'], employee_project, kp[member].ss58_address) 
-    contract_call("Employee_project metadata " + member,     kp['alice'], employee_project, "Minting::assign_metadata", args = { 'token_id': { 'U64' : ids[member]['employee_project']}, 'metadata': titles[member]['employee_project']})
-    contract_call("Employee_project voting_power " + member, kp['alice'], employee_project, "set_token_voting_power",   args = { 'token_id': { 'U64' : ids[member]['employee_project']}, 'voting_factor': titles[member]['project_voting_power'] }) 
+    contract_call("Employee_project metadata " + member, kp['alice'], project, "set_caller_project_title", args = { 'project_id': project_id, 'project_token_id': { 'U64' : ids[member]['employee_project']}, 'title': titles[member]['employee_project']})
+    contract_call("Employee_project voting_power " + member, kp['alice'], project, "set_caller_project_voting_power", args = { 'project_id': project_id, 'project_token_id': { 'U64' : ids[member]['employee_project']}, 'voting_factor': titles[member]['project_voting_power'] }) 
 
 
 ids['contract'] = {}
@@ -261,6 +262,12 @@ ids['contract']['project'] = project_address
 ids['contract']['employee'] = str(employee_address)
 ids['contract']['employee_function'] = str(function_address)
 ids['contract']['employee_project'] = str(eproject_address)
+
+get_caller_project_voting_power = project.read(kp['alice'], 'get_caller_project_voting_power', args = {
+    'project_id': project_id,
+    'project_token_id': { 'U64': ids['alice']['employee_project'] }
+})
+print("get_caller_project_voting_power", get_caller_project_voting_power)
 
 print("♐ IDs:", ids)
 
@@ -434,6 +441,11 @@ state = project.read(kp['alice'], 'proposal_details', args = { 'project_id': pro
 
 
 # Alice votes
+
+#test_token_voting_power = employee_function.read(kp['alice'], 'token_voting_power', args = {
+#    'token_id': { 'U64' : ids['alice']['employee_function'] }
+#})
+#print("test_token_voting_power: ", test_token_voting_power, "sent_token_id: ", ids['alice']['employee_function'])
 
 contract_call(
     "Alice votes FOR",
