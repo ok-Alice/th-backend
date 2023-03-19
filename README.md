@@ -2,25 +2,38 @@
 
 ## Build
 
+To build the backend [Ink! contracts](https://use.ink/)  you need a working [Rust](https://www.rust-lang.org/) compiler with [cargo-contract](https://github.com/paritytech/cargo-contract) installed:
+
+
     $ cd contracts
     $ sh build-all.sh
 
 
 ## Deploy 
 
-Have a local node running, tested on [Swanky node](https://github.com/AstarNetwork/swanky-node/releases/)
+Have a local node running, the code was tested on [Swanky node](https://github.com/AstarNetwork/swanky-node/releases/).
+
+The **deploy.py** script will deploy the compiled contracts:
 
     $ python3 contratcs/deploy.py
     ✅ Deployed assignment/assignment as Assigment for Hash : 5GjhGhEYLkuJFZTwdTMFZ4GpYhHSvyVDFZ3sXkTnPnmvMrHP CodeHash: 0x9916bd157b9ae219e08ad0a63e1e668903f7639fadf67b4c187493e4b113a29b
     ✅ Deployed employee/employee as Employee for Hash : 5Dhgwd2agw49LUUkwmEasyGY5kQd3BEYwWzN1cBWgZyzoAWR CodeHash: 0xdfe4b0e185d389c134d4d908278189517a328417478f8f9905f896fdbee5813d
     ✅ Deployed project as Project : 5HkocnDLcDRPTybQ2HXuA7cKQh6XihUzvaZCfXW6Rinb2BY1 CodeHash: 0x4ed51248db5265f4a53f5b00b455c2e0d765dbab2d1b8e2261b36f31c37c3602
 
-For some unknown reason, the *project* contract is non-functional when deploying through the python script. It has to be deployed manually through the polkadot UI.  Use the contract hashes from the deploy script as argument for the constructor of project
+For some unknown reason, the *project* contract is non-functional when deploying through this python script. It has to be deployed manually through the polkadot UI.  Use the contract hashes from the deploy script as argument for the constructor of project
 ![image](https://user-images.githubusercontent.com/18469570/225447629-b6e046b9-aa8a-417a-902b-cd19f58960a5.png)
 
-Use the address of the deployed contract as an argument for *prepenv.py*
 
-    $ python3 prepenv.py 5HLsbyoZ77HMwCoCMDUFEBdgvQ8T9u2qSRoxNbJa4CnWu3gL
+
+
+Once the *project* contract was succesfully deployed, the **prepenv.py** script can be used to setup the basic environment. This script will setup a testing environment where a new project is created and all 6 dev account are made member.
+
+The script takes 2 arguments: 
+* The address of the manually deployed *project* contract
+* path to json output (will contain all contract addresses and minted NFT Ids)
+
+For example:
+    $ python3 prepenv.py 5HLsbyoZ77HMwCoCMDUFEBdgvQ8T9u2qSRoxNbJa4CnWu3gL /tmp/output.json
     Alice signs:  <Keypair (address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY)>
     ✅ Successful transfer from <Keypair (address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY)> to 5HLsbyoZ77HMwCoCMDUFEBdgvQ8T9u2qSRoxNbJa4CnWu3gL for 100000000000000000
     ✅ Loaded project from 5HLsbyoZ77HMwCoCMDUFEBdgvQ8T9u2qSRoxNbJa4CnWu3gL  CodeHash: 0x4ed51248db5265f4a53f5b00b455c2e0d765dbab2d1b8e2261b36f31c37c3602
